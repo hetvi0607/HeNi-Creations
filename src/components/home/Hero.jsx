@@ -1,4 +1,5 @@
 import heroImage from "../../assets/products/image1.jpg";
+import { Link } from "react-router-dom";
 
 function Hero() {
   return (
@@ -13,14 +14,20 @@ function Hero() {
             Timeless Lippan Art for Elegant Homes
           </h2>
 
-          <p className="mt-6 text-lg text-[#6B4B38] max-w-xl">
-            Discover handcrafted mirror work, traditional textures, and soulful
-            designs made with love by HeNi Creations.
-          </p>
+       <div className="flex flex-col gap-8">
+  <p className="text-xl text-[#4A3528] leading-10 max-w-2xl">
+    Discover handcrafted mirror work, traditional textures, and soulful
+    designs made with love by HeNi Creations.
+  </p>
 
-          <button className="mt-8 bg-[#4A3528] text-white px-8 py-4 rounded-full hover:bg-[#7B2D26] transition">
-            Shop Collection
-          </button>
+  <Link
+    to="/shop"
+    className="w-fit bg-[#4A3528] text-white px-12 py-5 rounded-full text-xl font-semibold hover:bg-[#7B2D26] transition-all duration-300 hover:scale-105"
+  >
+    Shop Collection
+  </Link>
+</div>
+        
         </div>
 
         <div className="relative">
