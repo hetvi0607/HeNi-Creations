@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { MessageCircle, CreditCard } from "lucide-react";
 import confetti from "canvas-confetti";
 
+const API_BASE_URL = "https://heni-creations.onrender.com";
+
 function Checkout() {
   const [cart, setCart] = useState([]);
   const [customer, setCustomer] = useState({
@@ -59,6 +61,15 @@ ${customer.note}`;
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
+      const existingScript = document.querySelector(
+        'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+      );
+
+      if (existingScript) {
+        resolve(true);
+        return;
+      }
+
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
@@ -81,16 +92,16 @@ ${customer.note}`;
     const scriptLoaded = await loadRazorpayScript();
 
     if (!scriptLoaded) {
-      alert("Razorpay SDK failed to load. Check your internet connection.");
+      alert("Razorpay SDK failed to load. Please check your internet.");
       return;
     }
 
     try {
-      const keyResponse = await fetch("http://localhost:5000/api/payment/key");
+      const keyResponse = await fetch(`${API_BASE_URL}/api/payment/key`);
       const keyData = await keyResponse.json();
 
       const orderResponse = await fetch(
-        "http://localhost:5000/api/payment/create-order",
+        `${API_BASE_URL}/api/payment/create-order`,
         {
           method: "POST",
           headers: {
@@ -109,9 +120,10 @@ ${customer.note}`;
         name: "HeNi Creations",
         description: "Handmade Lippan Art Order",
         order_id: orderData.id,
+
         handler: async function (response) {
           const verifyResponse = await fetch(
-            "http://localhost:5000/api/payment/verify",
+            `${API_BASE_URL}/api/payment/verify`,
             {
               method: "POST",
               headers: {
@@ -143,14 +155,17 @@ ${customer.note}`;
             alert("Payment verification failed.");
           }
         },
+
         prefill: {
           name: customer.name,
           contact: customer.phone,
         },
+
         notes: {
           address: customer.address,
           order_note: customer.note,
         },
+
         theme: {
           color: "#4A3528",
         },
@@ -159,8 +174,8 @@ ${customer.note}`;
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch (error) {
-      alert("Payment failed. Please make sure backend server is running.");
       console.error(error);
+      alert("Payment failed. Backend may be waking up. Please try again.");
     }
   };
 
@@ -231,7 +246,10 @@ ${customer.note}`;
 
               <div className="space-y-5">
                 {cart.map((item) => (
-                  <div key={item.id} className="flex gap-4 bg-white rounded-2xl p-4">
+                  <div
+                    key={item.id}
+                    className="flex gap-4 bg-white rounded-2xl p-4"
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
